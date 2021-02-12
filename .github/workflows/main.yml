@@ -13,5 +13,5 @@ jobs:
         terraform_directory: .
         rego_paths: /opt/regula/rules example_custom_rule
       env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.STAN_AWS_ACCESS_KEY }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.STAN_AWS_SECRET_KEY }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.TF_API_TOKEN }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_API_TOKEN }}
