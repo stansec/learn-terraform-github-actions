@@ -1,52 +1,44 @@
-terraform {
-  required_providers {
-    aws = {
-      source = "hashicorp/aws"
-    }
-    random = {
-      source = "hashicorp/random"
-    }
-  }
-
-  backend "remote" {
-    organization = "REPLACE_ME"
-
-    workspaces {
-      name = "gh-actions-demo"
-    }
-  }
-}
-
 provider "aws" {
-  region = "us-west-2"
+  version = "~> 2.41"
+  region  = "us-west-2"
 }
 
-provider "random" {}
+resource "aws_iam_policy" "basically_allow_all" {
+  name        = "some_policy"
+  path        = "/"
+  description = "Some policy"
 
-resource "random_pet" "sg" {}
-
-resource "aws_instance" "web" {
-  ami                    = "ami-830c94e3"
-  instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.web-sg.id]
-
-  user_data = <<-EOF
-              #!/bin/bash
-              echo "Hello, World" > index.html
-              nohup busybox httpd -f -p 8080 &
-              EOF
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "*",
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
 }
 
-resource "aws_security_group" "web-sg" {
-  name = "${random_pet.sg.id}-sg"
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
+resource "aws_iam_policy" "basically_deny_all" {
+  name        = "some_policy"
+  path        = "/"
+  description = "Some policy with a long description that denies anything"
 
-output "web-address" {
-  value = "${aws_instance.web.public_dns}:8080"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "*"
+      ],
+      "Effect": "Deny",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
 }
